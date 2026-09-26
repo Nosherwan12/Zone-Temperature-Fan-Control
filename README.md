@@ -1,53 +1,107 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 | Linux |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | --------- | -------- | -------- | -------- | -------- | ----- |
+# Zone Temperature & Fan Control Unit
 
-# Hello World Example
+## Project Overview
 
-Starts a FreeRTOS task to print "Hello World".
+A simplified single-zone HVAC control prototype based on an ESP32-S3 controller.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+The system measures zone temperature and relative humidity using a DHT22 sensor, provides an operator-adjustable temperature setpoint through a 10 kΩ potentiometer, and automatically controls a 12 V DC cooling fan through a relay.
 
-## How to use example
+The project demonstrates concepts used in DDC/BMS-style HVAC control, including field inputs, control logic, actuator commands, status indication, alarm handling, fault response, and commissioning.
 
-Follow detailed instructions provided specifically for this example.
+## System Architecture
 
-Select the instructions depending on Espressif chip installed on your development board:
+DHT22 + Potentiometer
+        ↓
+ESP32-S3 Controller
+        ↓
+Fan Relay + Status LEDs
+        ↓
+12 V DC Cooling Fan
 
-- [ESP32 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html)
-- [ESP32-S2 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html)
+The DHT22 provides temperature and humidity measurements. The potentiometer provides the operator-adjustable temperature setpoint. The ESP32-S3 evaluates these inputs and controls the fan relay and status indicators.
 
+## Key Control Functions
 
-## Example folder contents
+* Temperature and relative humidity monitoring
+* Adjustable temperature setpoint from 15°C to 30°C
+* Fan control using ±0.5°C hysteresis
+* High temperature deviation alarm at more than 5°C above setpoint
+* Fan command and system status indication using LEDs
+* Fan forced OFF during invalid control input conditions
+* Automatic recovery after valid sensor input is restored
+* Active-low relay control for the 12 V DC fan
 
-The project **hello_world** contains one source file in C language [hello_world_main.c](main/hello_world_main.c). The file is located in folder [main](main).
+## Hardware
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt` files that provide set of directives and instructions describing the project's source files and targets (executable, library, or both).
+* ESP32-S3
+* DHT22 temperature and humidity sensor
+* 10 kΩ potentiometer
+* 5 V relay module
+* 12 V DC cooling fan
+* 12 V, 2 A DC power supply
+* 12 V to 5 V buck converter
+* Green, yellow, and red status LEDs
+* 330 Ω LED current-limiting resistors
 
-Below is short explanation of remaining files in the project folder.
+## Software
 
-```
-├── CMakeLists.txt
-├── pytest_hello_world.py      Python script used for automated testing
-├── main
-│   ├── CMakeLists.txt
-│   └── hello_world_main.c
-└── README.md                  This is the file you are currently reading
-```
+The firmware is developed using ESP-IDF.
 
-For more information on structure and contents of ESP-IDF projects, please refer to Section [Build System](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html) of the ESP-IDF Programming Guide.
+The application is divided into separate modules for:
 
-## Troubleshooting
+* DHT22 sensor handling
+* Setpoint ADC input
+* Fan control logic
+* Status indicators
+* Main application control flow
 
-* Program upload failure
+The control logic uses temperature hysteresis to prevent unnecessary relay switching.
 
-    * Hardware connection is not correct: run `idf.py -p PORT monitor`, and reboot your board to see if there are any output logs.
-    * The baud rate for downloading is too high: lower your baud rate in the `menuconfig` menu, and try again.
+## Documentation
 
-## Technical support and feedback
+Detailed engineering documentation is available in the docs folder:
 
-Please use the following feedback channels:
+* 01_Points_List.xlsx — Point definitions and I/O schedule
+* 02_Sequence_of_Operations.docx — Control sequence, alarms, fault handling, and limitations
+* 03_Electrical_Schematic.kicad_sch — Electrical schematic
+* 04_Commissioning_Test_Sheet.xlsx — Commissioning and functional test results
 
-* For technical queries, go to the [esp32.com](https://esp32.com/) forum
-* For a feature request or bug report, create a [GitHub issue](https://github.com/espressif/esp-idf/issues)
+## Commissioning
 
-We will get back to you as soon as possible.
+The prototype was tested for:
+
+* Controller startup
+* Temperature and setpoint acquisition
+* Fan control and hysteresis operation
+* High temperature alarm
+* Sensor fault handling
+* Sensor recovery
+* Relay and 12 V fan operation
+
+All defined commissioning tests passed.
+
+## Limitations
+
+This is a prototype for demonstrating basic HVAC control concepts. It is not intended to replace a commercial HVAC or building automation controller.
+
+The system does not implement:
+
+* Physical fan feedback
+* Airflow proving
+* Variable-speed fan control
+* BACnet or Modbus communication
+* Multi-zone control
+* Production-level safety interlocks
+* Redundant sensing or independent safety control
+
+## Future Improvements
+
+Possible extensions include:
+
+* Fan feedback or current sensing
+* Variable-speed fan control
+* Multiple temperature zones
+* BACnet or Modbus communication
+* HMI or web-based operator interface
+* Additional HVAC equipment control
+* PCB implementation and enclosure design
