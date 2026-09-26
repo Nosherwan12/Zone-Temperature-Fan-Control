@@ -10,13 +10,15 @@ The project demonstrates concepts used in DDC/BMS-style HVAC control, including 
 
 ## System Architecture
 
-DHT22 + Potentiometer
-        ↓
-ESP32-S3 Controller
-        ↓
-Fan Relay + Status LEDs
-        ↓
-12 V DC Cooling Fan
+<p align="center">
+  DHT22 + Potentiometer<br>
+  ↓<br>
+  ESP32-S3 Controller<br>
+  ↓<br>
+  Fan Relay + Status LEDs<br>
+  ↓<br>
+  12 V DC Cooling Fan
+</p>
 
 The DHT22 provides temperature and humidity measurements. The potentiometer provides the operator-adjustable temperature setpoint. The ESP32-S3 evaluates these inputs and controls the fan relay and status indicators.
 
